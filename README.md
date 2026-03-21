@@ -35,5 +35,15 @@ npm run dev
 
 ```sh
 npm run build
+
+Copy-Item -Recurse -Force dist\* .
+
+git add .
+git commit -m "update final commit"
+git push
+
 ```
 # hogot_vivle
+
+
+
