@@ -8,14 +8,11 @@
       <component :is="page.component" v-bind="page.props" />
     </div>
   </div>
-  <!-- <div class="nav">
-    <button @click="prev">←</button>
-    <button @click="next">→</button>
-  </div> -->
+  <BgmPlayer ref="playerRef" />
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { PageFlip } from 'page-flip'
 
 import coverPage from './views/pages/coverPage.vue'
@@ -29,6 +26,8 @@ import Chapter7 from './views/pages/Chapter7.vue'
 import Chapter8 from './views/pages/Chapter8.vue'
 import Chapter9 from './views/pages/Chapter9.vue'
 import Chapter10 from './views/pages/Chapter10.vue'
+
+import BgmPlayer from './BgmPlayer.vue'
 
 const book = ref(null)
 
@@ -46,8 +45,7 @@ const pages = [
   { component: Chapter10},
 ]
 
-onMounted(() => {
-  
+onMounted(() => {  
   console.log(book.value.querySelectorAll('.page'))
 
   const pageFlip = new PageFlip(book.value, {
@@ -60,7 +58,9 @@ onMounted(() => {
   pageFlip.loadFromHTML(
     book.value.querySelectorAll('.page')
   )
+
 })
+
 </script>
 <style scoped>
   .book {
