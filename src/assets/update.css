@@ -46,6 +46,12 @@
   font-family: 'Noto Serif KR', serif;
 
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);    
+
+  background: linear-gradient(
+    135deg,
+    #fff8dc 0%,
+    #f5e6c8 100%
+  );
 }
 
 .overlay p {
@@ -99,4 +105,12 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.stf__wrapper {
+  padding-bottom: 0 !important;
+}
+
+.stf__block {
+  padding-bottom: 70px;
 }

@@ -20,39 +20,44 @@ defineProps({
 
 <style scoped>
 .image-page {
-  position: relative; /* ⭐ 필수 */
+  position: relative; 
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #f5f1e8;
+  background: white;
 }
 
 .image-page img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* 🔥 텍스트 overlay */
 .overlay {
   position: absolute;
-  inset: 0;
-  background: none;
-  
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
 
-  color: white;
-  text-align: center;
+  width: auto;        /* ⭐ 중요 */
+  height: auto;       /* ⭐ 중요 */
+  padding: 0;         /* ⭐ 혹시 있으면 제거 */
+  background: none;   /* ⭐ 확실히 제거 */
+
+  pointer-events: none; /* ⭐ 클릭 방해 방지 */
 }
 
 /* 제목 */
 .title {
-  font-size: 48px;
-  font-weight: bold;
-  text-shadow: 
-    0 4px 10px rgba(0,0,0,0.6),
-    0 0 20px rgba(0,0,0,0.4);
+  font-size: 72px;
+  font-weight: 800;
+  letter-spacing: 6px;
+
+  color: white;
+
+  text-shadow:
+    0 4px 12px rgba(0,0,0,0.6),
+    0 0 30px rgba(0,0,0,0.3);
 }
 </style>

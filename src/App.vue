@@ -8,6 +8,10 @@
       <component :is="page.component" v-bind="page.props" />
     </div>
   </div>
+  <!-- <div class="nav">
+    <button @click="prev">←</button>
+    <button @click="next">→</button>
+  </div> -->
 </template>
 
 <script setup>
@@ -47,8 +51,8 @@ onMounted(() => {
   console.log(book.value.querySelectorAll('.page'))
 
   const pageFlip = new PageFlip(book.value, {
-    width: 900,
-    height: 900,
+    width: 1000,
+    height: 800,
     showCover: false,
     usePortrait: true,
   })
@@ -60,8 +64,22 @@ onMounted(() => {
 </script>
 <style scoped>
   .book {
-    width: 900px;
-    height: 900px;
+    width: 1000px;
+    height: 800px;
     margin: 0 auto;
+  }
+  .nav {
+    position: fixed;
+    bottom: 30px;
+    right: 40px;
+  }
+
+  .nav button {
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    margin: 0 5px;
+    padding: 10px 14px;
+    border-radius: 8px;
   }
 </style>
