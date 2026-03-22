@@ -9,6 +9,10 @@
     </div>
   </div>
   <BgmPlayer ref="playerRef" />
+  <div class="mobile-nav" v-if="isMobile">
+    <button @click="pageFlip.flipPrev()">←</button>
+    <button @click="pageFlip.flipNext()">→</button>
+  </div>
 </template>
 
 <script setup>
@@ -45,27 +49,56 @@ const pages = [
   { component: Chapter10},
 ]
 
+
+
 onMounted(() => {  
+    
+  // 모바일 대응
+  const isMobile = window.innerWidth < 768;
+
   console.log(book.value.querySelectorAll('.page'))
 
   const pageFlip = new PageFlip(book.value, {
-    width: 1000,
-    height: 800,
+    width: isMobile ? 350 : 1000,
+    height: isMobile ? 600 : 800,
+    
+    minWidth: 300,
+    maxWidth: 1000,
+
+    minHeight: 400,
+    maxHeight: 1200,
+
     showCover: false,
+
     usePortrait: true,
+    mobileScrollSupport: true
   })
 
+  window.addEventListener("resize", () => {
+    const isMobile = window.innerWidth < 768;
+
+    pageFlip.update({
+      width: isMobile ? 350 : 800,
+      height: isMobile ? 600 : 600,
+      usePortrait: isMobile
+    });
+  });
+
   pageFlip.loadFromHTML(
-    book.value.querySelectorAll('.page')
+    document.querySelectorAll(".page")
   )
 
 })
 
+
+
+
+
 </script>
 <style scoped>
   .book {
-    width: 1000px;
-    height: 800px;
+    width: 100%;
+    height: 100vh;
     margin: 0 auto;
   }
   .nav {
@@ -81,5 +114,15 @@ onMounted(() => {
     margin: 0 5px;
     padding: 10px 14px;
     border-radius: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .book {
+      height: 100vh;
+    }
+
+    .stf__parent {
+      transform: scale(1) !important;
+    }
   }
 </style>
