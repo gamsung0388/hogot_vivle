@@ -1,13 +1,24 @@
 <template>
   <div class="player">
+    <div class="title-wrapper">
+      <div class="title">
+        {{ currentTrack.title }} &nbsp;&nbsp;&nbsp;
+        {{ currentTrack.title }}
+      </div>
+    </div>
     <!-- audio -->
     <audio ref="bgm" @ended="onEnded"></audio>
+
+    <!-- 이전곡 -->
+    <button @click="prevTrack">◀◀</button>
 
     <!-- 컨트롤 -->
     <button @click="togglePlay">
       {{ isPlaying ? '⏸' : '▶' }}
     </button>
 
+    <!-- 다음곡 -->
+    <button @click="nextTrack">▶▶</button>
     <!-- 시간 -->
     <div class="time">
       {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
@@ -29,11 +40,20 @@ import { ref, onMounted, computed, watch } from 'vue'
 const bgm = ref(null)
 
 const playlist = [
-  `${import.meta.env.BASE_URL}assets/audio/track1.mp3`,
-  `${import.meta.env.BASE_URL}assets/audio/track2.mp3`
+  {
+    title: "바람에 몸을 맡기리", 
+    src: `${import.meta.env.BASE_URL}assets/audio/track1.mp3`,
+  },
+  {
+    title: "Grand Golden Hodod", 
+    src: `${import.meta.env.BASE_URL}assets/audio/track2.mp3`,
+  },  
 ]
 
-let currentIndex = 0
+let currentIndex = ref(0)
+const audio = ref(null);
+const currentTrack = computed(() => playlist[currentIndex.value]);
+
 
 const isPlaying = ref(false)
 const currentTime = ref(0)
@@ -46,13 +66,21 @@ watch(volume, (v) => {
 
 // ▶ 재생
 const playTrack = async() => {
-  bgm.value.src = playlist[currentIndex]
-  await bgm.value.load()
+  bgm.value.volume = 0
+  bgm.value.src = currentTrack.value.src
 
-  try {
-    await bgm.value.play()
-    isPlaying.value = true
-  } catch {}
+  await bgm.value.play()
+
+  let v = 0
+  const fade = setInterval(() => {
+    v += 0.05
+    if (v >= volume.value) {
+      bgm.value.volume = volume.value
+      clearInterval(fade)
+    } else {
+      bgm.value.volume = v
+    }
+  }, 50)
 }
 
 const safePlay = async () => {
@@ -66,32 +94,31 @@ const safePlay = async () => {
 
 // ⏸ 토글
 const togglePlay = async () => {
-    if (!bgm.value) return  // ⭐ 이거 추가
+  if (!bgm.value) return
 
-    // ⭐ 처음이면 트랙 넣기
-    if (!bgm.value.src) {
-        bgm.value.src = playlist[currentIndex]
-    }
+  if (!bgm.value.src) {
+    bgm.value.src = currentTrack.value.src
+  }
 
-    if (bgm.value.paused) {
-        await safePlay()
-    } else {
-        bgm.value.pause()
-        isPlaying.value = false
-    }
+  if (bgm.value.paused) {
+    await bgm.value.play()
+    isPlaying.value = true
+  } else {
+    bgm.value.pause()
+    isPlaying.value = false
+  }
 }
 
 // ⏭ 다음 곡
 const onEnded = () => {
-  currentIndex = (currentIndex + 1) % playlist.length
-  playTrack()
+  nextTrack()
 }
 
 const startAudio = async () => {
   if (isPlaying.value) return
 
   if (!bgm.value.src) {
-    bgm.value.src = playlist[currentIndex]
+    bgm.value.src = currentTrack.value.src
   }
 
   try {
@@ -102,22 +129,31 @@ const startAudio = async () => {
   }
 }
 
+function prevTrack() {
+  currentIndex.value =
+    (currentIndex.value - 1 + playlist.length) % playlist.length
+  playTrack()
+}
+
+function nextTrack() {
+  currentIndex.value = (currentIndex.value + 1) % playlist.length
+  playTrack()
+}
+
 // ⏱ 시간 업데이트
 onMounted(() => {
-    bgm.value.volume = volume.value
+   bgm.value.volume = volume.value
 
-    bgm.value.addEventListener('timeupdate', () => {
-      currentTime.value = bgm.value.currentTime
-      
-    })
+  bgm.value.addEventListener('timeupdate', () => {
+    currentTime.value = bgm.value.currentTime
+  })
 
-    bgm.value.addEventListener('loadedmetadata', () => {
-        duration.value = bgm.value.duration
-    })
-    
-    // ⭐ 핵심 추가
-    document.addEventListener('click', startAudio, { once: true })
-    document.addEventListener('touchstart', startAudio, { once: true })
+  bgm.value.addEventListener('loadedmetadata', () => {
+    duration.value = bgm.value.duration
+  })
+
+  document.addEventListener('click', startAudio, { once: true })
+  document.addEventListener('touchstart', startAudio, { once: true })
 })
 
 
@@ -200,5 +236,45 @@ button {
 /* 볼륨 */
 input[type="range"] {
   width: 80px;
+}
+
+.title-wrapper {
+  width: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.title {
+  white-space: nowrap;
+  display: inline-block;
+  animation: marquee 8s linear infinite;
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.player {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 16px;
+  border-radius: 12px;
+
+  background: rgba(0,0,0,0.6);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .title-wrapper {
+    width: 140px;
+  }
 }
 </style>
