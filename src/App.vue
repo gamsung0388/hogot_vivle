@@ -49,8 +49,6 @@ const pages = [
   { component: Chapter10},
 ]
 
-
-
 onMounted(() => {  
     
   // 모바일 대응

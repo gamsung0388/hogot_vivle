@@ -87,16 +87,37 @@ const onEnded = () => {
   playTrack()
 }
 
+const startAudio = async () => {
+  if (isPlaying.value) return
+
+  if (!bgm.value.src) {
+    bgm.value.src = playlist[currentIndex]
+  }
+
+  try {
+    await bgm.value.play()
+    isPlaying.value = true
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 // ⏱ 시간 업데이트
 onMounted(() => {
     bgm.value.volume = volume.value
+
     bgm.value.addEventListener('timeupdate', () => {
-        currentTime.value = bgm.value.currentTime
+      currentTime.value = bgm.value.currentTime
+      
     })
 
     bgm.value.addEventListener('loadedmetadata', () => {
         duration.value = bgm.value.duration
     })
+    
+    // ⭐ 핵심 추가
+    document.addEventListener('click', startAudio, { once: true })
+    document.addEventListener('touchstart', startAudio, { once: true })
 })
 
 
@@ -125,6 +146,7 @@ const formatTime = (time) => {
 defineExpose({
   play: () => bgm.value?.play()
 })
+
 </script>
 <style scoped>
 .player {
